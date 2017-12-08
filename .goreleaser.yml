@@ -1,0 +1,9 @@
+builds:
+  - binary: config_coordinator
+    main: config_coordinator/config_coordinator.go
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
