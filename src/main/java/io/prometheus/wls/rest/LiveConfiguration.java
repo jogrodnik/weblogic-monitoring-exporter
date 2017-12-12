@@ -44,7 +44,7 @@ class LiveConfiguration {
 
     @SuppressWarnings("unchecked")
     static void loadFromString(String yamlString) {
-        Map<String, Object> yamlConfig = (Map<String, Object>) new Yaml().load(yamlString);
+        Map<String, Object> yamlConfig = new Yaml().load(yamlString);
 
         config = ExporterConfig.loadConfig(yamlConfig);
     }

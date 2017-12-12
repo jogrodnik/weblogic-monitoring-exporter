@@ -11,7 +11,6 @@ import com.meterware.pseudoserver.WebResource;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +41,7 @@ public class WebClientImplTest extends HttpUserAgentTest {
     private static final String SET_COOKIE_VALUE = COOKIE + "; path=localhost";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         sentInfo = null;
         sentHeaders.clear();
     }
@@ -189,7 +188,7 @@ public class WebClientImplTest extends HttpUserAgentTest {
     public void when400StatusReceived_throwsRestQueryException() throws Exception {
         defineResource("badRestQuery", new PseudoServlet() {
             @Override
-            public WebResource getPostResponse() throws IOException {
+            public WebResource getPostResponse() {
                 return new WebResource("bad query", "text/plain", SC_BAD_REQUEST);
             }
         });
@@ -201,7 +200,7 @@ public class WebClientImplTest extends HttpUserAgentTest {
     public void when401ReceivedFromServer_throwsException() throws Exception {
         defineResource("protected", new PseudoServlet() {
             @Override
-            public WebResource getPostResponse() throws IOException {
+            public WebResource getPostResponse() {
                 WebResource resource = new WebResource("unauthorized", "text/plain", SC_UNAUTHORIZED);
                 resource.addHeader("WWW-Authenticate: Basic realm=\"REST Realm\"");
                 return resource;
@@ -215,7 +214,7 @@ public class WebClientImplTest extends HttpUserAgentTest {
     public void when401ReceivedFromServer_exceptionIncludesRealm() throws Exception {
         defineResource("protected", new PseudoServlet() {
             @Override
-            public WebResource getPostResponse() throws IOException {
+            public WebResource getPostResponse() {
                 WebResource resource = new WebResource("unauthorized", "text/plain", SC_UNAUTHORIZED);
                 resource.addHeader("WWW-Authenticate: Basic realm=\"REST Realm\"");
                 return resource;
@@ -235,7 +234,7 @@ public class WebClientImplTest extends HttpUserAgentTest {
     public void when403ReceivedFromServer_throwsException() throws Exception {
         defineResource("forbidden", new PseudoServlet() {
             @Override
-            public WebResource getPostResponse() throws IOException {
+            public WebResource getPostResponse() {
                 return new WebResource("not allowed", "text/plain", SC_FORBIDDEN);
             }
         });

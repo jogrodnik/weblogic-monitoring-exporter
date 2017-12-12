@@ -46,17 +46,17 @@ public class ConfigurationServletTest {
     }
 
     @Test
-    public void configuration_isHttpServlet() throws Exception {
+    public void configuration_isHttpServlet() {
         assertThat(servlet, instanceOf(HttpServlet.class));
     }
 
     @Test
-    public void servlet_hasWebServletAnnotation() throws Exception {
+    public void servlet_hasWebServletAnnotation() {
         assertThat(ConfigurationServlet.class.getAnnotation(WebServlet.class), notNullValue());
     }
 
     @Test
-    public void servletAnnotationIndicatesConfigurationPage() throws Exception {
+    public void servletAnnotationIndicatesConfigurationPage() {
         WebServlet annotation = ConfigurationServlet.class.getAnnotation(WebServlet.class);
 
         assertThat(annotation.value(), arrayContaining("/" + CONFIGURATION_PAGE));

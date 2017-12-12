@@ -25,12 +25,12 @@ public class MetricsStreamTest {
     private MetricsStream metrics = new MetricsStream(ps, performanceProbe);
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         LiveConfiguration.setServer("localhost", 7001);
     }
 
     @Test
-    public void whenNoMetricsScraped_reportNoneScraped() throws Exception {
+    public void whenNoMetricsScraped_reportNoneScraped() {
         assertThat(getPrintedMetrics(),
                 containsString("wls_scrape_mbeans_count_total{instance=\"localhost:7001\"} 0"));
     }
@@ -41,7 +41,7 @@ public class MetricsStreamTest {
     }
 
     @Test
-    public void afterMetricsScraped_reportScrapedCount() throws Exception {
+    public void afterMetricsScraped_reportScrapedCount() {
         metrics.printMetric("a", 12);
         metrics.printMetric("b", 120);
         metrics.printMetric("c", 0);
@@ -51,7 +51,7 @@ public class MetricsStreamTest {
     }
 
     @Test
-    public void afterTimePasses_reportScrapeDuration() throws Exception {
+    public void afterTimePasses_reportScrapeDuration() {
         performanceProbe.incrementElapsedTime(12.4);
 
         assertThat(getPrintedMetrics(),
@@ -59,7 +59,7 @@ public class MetricsStreamTest {
     }
 
     @Test
-    public void afterProcessing_reportCpuPercent() throws Exception {
+    public void afterProcessing_reportCpuPercent() {
         performanceProbe.incrementCpuTime(3.2);
 
         assertThat(getPrintedMetrics(),
@@ -67,7 +67,7 @@ public class MetricsStreamTest {
     }
 
     @Test
-    public void producedMetricsAreCompliant() throws Exception {
+    public void producedMetricsAreCompliant() {
         performanceProbe.incrementElapsedTime(20);
         performanceProbe.incrementCpuTime(3);
 

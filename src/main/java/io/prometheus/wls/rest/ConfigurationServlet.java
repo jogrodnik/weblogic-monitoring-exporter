@@ -41,7 +41,13 @@ public class ConfigurationServlet extends PassThroughAuthenticationServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doWithAuthentication(request, response, this::updateConfiguration);
+        AuthenticatedService authenticatedService = new AuthenticatedService() {
+            @Override
+            public void execute(WebClient webClient, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+                updateConfiguration(webClient, req, resp);
+            }
+        };
+        doWithAuthentication(request, response, authenticatedService);
     }
 
     private void updateConfiguration(WebClient webClient, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

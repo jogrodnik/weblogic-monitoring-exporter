@@ -4,7 +4,7 @@ package io.prometheus.wls.rest.matchers;
  *
  * Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
  */
-import java.util.function.Predicate;
+//import java.util.function.Predicate;
 
 class MetricsUtils {
     static String getMetricName(String s) {
@@ -15,9 +15,10 @@ class MetricsUtils {
 /**
  * @author Russell Gold
  */
-    static class Uniq implements Predicate<String> {
+//    static class Uniq implements Predicate<String> {
+    static class Uniq { //implements Predicate<String> {
         String last = "";
-        @Override
+        //@Override
         public boolean test(String s) {
             try {
                 return s != null && !s.equals(last);

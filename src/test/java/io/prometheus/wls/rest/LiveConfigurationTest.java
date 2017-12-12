@@ -70,13 +70,13 @@ public class LiveConfigurationTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         InMemoryFileSystem.uninstall();
         ConfigurationUpdaterStub.uninstall();
     }
 
     @Test
-    public void afterInitCalled_haveQueries() throws Exception {
+    public void afterInitCalled_haveQueries() {
         init(CONFIGURATION);
 
         assertThat(LiveConfiguration.hasQueries(), is(true));
@@ -88,19 +88,19 @@ public class LiveConfigurationTest {
     }
 
     @Test
-    public void whenInitNotCalled_haveNoQueries() throws Exception {
+    public void whenInitNotCalled_haveNoQueries() {
         assertThat(LiveConfiguration.hasQueries(), is(false));
     }
 
     @Test
-    public void afterInitCalled_haveExpectedConfiguration() throws Exception {
+    public void afterInitCalled_haveExpectedConfiguration() {
         init(CONFIGURATION);
 
         assertThat(LiveConfiguration.asString(), equalTo(CONFIGURATION));
     }
 
     @Test
-    public void afterInitCalledTwice_haveFirstConfiguration() throws Exception {
+    public void afterInitCalledTwice_haveFirstConfiguration() {
         init(CONFIGURATION);
         init(ADDED_CONFIGURATION);
 
@@ -108,7 +108,7 @@ public class LiveConfigurationTest {
     }
 
     @Test
-    public void afterInitTimestampIsZero() throws Exception {
+    public void afterInitTimestampIsZero() {
         init(CONFIGURATION);
         
         assertThat(LiveConfiguration.getTimestamp(), equalTo(0L));
@@ -175,7 +175,7 @@ public class LiveConfigurationTest {
     }
 
     @Test
-    public void whenSharedTimestampIndicatesNewConfiguration_updateLiveConfiguration() throws Exception {
+    public void whenSharedTimestampIndicatesNewConfiguration_updateLiveConfiguration() {
         init(CONFIGURATION);
 
         long newTimestamp = LiveConfiguration.getTimestamp() + 1;
@@ -188,7 +188,7 @@ public class LiveConfigurationTest {
     }
 
     @Test
-    public void whenSharedTimestampIndicatesHaveLatestConfiguration_dontUpdateLiveConfiguration() throws Exception {
+    public void whenSharedTimestampIndicatesHaveLatestConfiguration_dontUpdateLiveConfiguration() {
         init(CONFIGURATION);
 
         long newTimestamp = LiveConfiguration.getTimestamp();

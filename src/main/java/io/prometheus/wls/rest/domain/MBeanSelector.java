@@ -112,7 +112,7 @@ public class MBeanSelector {
         if (values.length == 1)
             appendScalar(sb, indent, "values", values[0]);
         else
-            sb.append(indent).append("values").append(": [").append(String.join(", ", values)).append("]\n");
+            sb.append(indent).append("values").append(": [").append(StringJoiner.join(", ", values)).append("]\n");
     }
 
     @SuppressWarnings("unchecked")
@@ -176,7 +176,7 @@ public class MBeanSelector {
     }
 
     private List<String> getValuesAsList() {
-        return values == null ? Collections.emptyList() : Arrays.asList(values);
+        return values == null ? Collections.<String>emptyList() : Arrays.asList(values);
     }
 
     /**

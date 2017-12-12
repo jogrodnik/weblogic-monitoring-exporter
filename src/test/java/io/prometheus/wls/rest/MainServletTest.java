@@ -34,23 +34,23 @@ public class MainServletTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         InMemoryFileSystem.uninstall();
         ConfigurationUpdaterStub.uninstall();
     }
 
     @Test
-    public void landingPage_isHttpServlet() throws Exception {
+    public void landingPage_isHttpServlet() {
         assertThat(servlet, instanceOf(HttpServlet.class));
     }
 
     @Test
-    public void servlet_hasWebServletAnnotation() throws Exception {
+    public void servlet_hasWebServletAnnotation() {
         assertThat(MainServlet.class.getAnnotation(WebServlet.class), notNullValue());
     }
 
     @Test
-    public void servletAnnotationIndicatesMainPage() throws Exception {
+    public void servletAnnotationIndicatesMainPage() {
         WebServlet annotation = MainServlet.class.getAnnotation(WebServlet.class);
 
         assertThat(annotation.value(), arrayContaining("/"));

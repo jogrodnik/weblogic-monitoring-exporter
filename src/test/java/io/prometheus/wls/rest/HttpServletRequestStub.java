@@ -88,7 +88,7 @@ abstract class HttpServletRequestStub implements HttpServletRequest {
     @Override
     public Enumeration<String> getHeaders(String name) {
         final String header = getHeader(name);
-        return header == null ? new Vector<String>(Collections.emptyList()).elements()
+        return header == null ? new Vector<>(Collections.<String>emptyList()).elements()
                               : new Vector<>(Collections.singletonList(header)).elements();
     }
 

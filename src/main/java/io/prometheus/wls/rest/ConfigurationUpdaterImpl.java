@@ -9,8 +9,6 @@ import com.google.gson.Gson;
 import io.prometheus.wls.rest.domain.QuerySyncConfiguration;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
 
 /**
  * An object to manage interactions with the configuration repeater over HTTP.
@@ -19,28 +17,32 @@ import java.time.Instant;
  */
 class ConfigurationUpdaterImpl implements ConfigurationUpdater {
     private WebClientFactory factory;
-    private Clock clock;
+    //private Clock clock;
+    //private Clock clock;
     private ConfigurationUpdate latest;
     private String repeaterUrl;
     private long refreshInterval;
-    private Instant nextUpdateTime;
+    //private Instant nextUpdateTime;
+    private Long nextUpdateTime;
 
     /**
      * Creates the updater.
      * @param syncConfiguration the configuration to apply to the updater
      */
     ConfigurationUpdaterImpl(QuerySyncConfiguration syncConfiguration) {
-        this(Clock.systemUTC(), new WebClientFactoryImpl());
+        //this(Clock.systemUTC(), new WebClientFactoryImpl());
+        this(System.currentTimeMillis(), new WebClientFactoryImpl());
         configure(syncConfiguration.getUrl(), syncConfiguration.getRefreshInterval());
     }
 
     /**
      * Creates a version of the updater to which delegates can be specified. Primarily used for unit testing.
-     * @param clock the clock indicating the current time
+     * //@param clock the clock indicating the current time
      * @param factory a factory for web clients
      */
-    ConfigurationUpdaterImpl(Clock clock, WebClientFactory factory) {
-        this.clock = clock;
+    //ConfigurationUpdaterImpl(Clock clock, WebClientFactory factory) {
+    ConfigurationUpdaterImpl(long now, WebClientFactory factory) {
+        //this.clock = clock;
         this.factory = factory;
     }
 
@@ -61,11 +63,16 @@ class ConfigurationUpdaterImpl implements ConfigurationUpdater {
     }
 
     private void getLatestConfiguration() {
-        if (nextUpdateTime != null && nextUpdateTime.isAfter(clock.instant())) return;
+        //if (nextUpdateTime != null && nextUpdateTime.isAfter(clock.instant())) return;
+        long currentTimeMillis = System.currentTimeMillis();
+        if (nextUpdateTime != null && nextUpdateTime > currentTimeMillis) return;
         try {
             WebClient client = factory.createClient(repeaterUrl);
             latest = new Gson().fromJson(client.doGetRequest(), ConfigurationUpdate.class);
-            nextUpdateTime = clock.instant().plusSeconds(refreshInterval);
+            long refreshIntervalMillis = refreshInterval * 1000;
+            //nextUpdateTime = clock.instant().plusSeconds(refreshInterval);
+            long instantMillis = System.currentTimeMillis();
+            nextUpdateTime = instantMillis + refreshIntervalMillis;
         } catch (IOException | WebClientException e) {
             latest = null;
         }
@@ -82,7 +89,8 @@ class ConfigurationUpdaterImpl implements ConfigurationUpdater {
     }
 
     private ConfigurationUpdate createUpdate(String configuration) {
-        return new ConfigurationUpdate(clock.instant().toEpochMilli(), configuration);
+        //return new ConfigurationUpdate(clock.instant().toEpochMilli(), configuration);
+        return new ConfigurationUpdate(System.currentTimeMillis(), configuration);
     }
 
     @Override

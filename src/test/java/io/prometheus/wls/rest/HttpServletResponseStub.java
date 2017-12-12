@@ -78,7 +78,8 @@ abstract class HttpServletResponseStub implements HttpServletResponse {
 
     @Override
     public Collection<String> getHeaders(String name) {
-        return headers.containsKey(name) ? headers.get(name) : Collections.emptyList();
+        //return headers.containsKey(name) ? headers.get(name) : Collections.emptyList();
+        return headers.containsKey(name) ? headers.get(name) : Collections.<String>emptyList();
     }
 
     abstract static class ServletOutputStreamStub extends ServletOutputStream {

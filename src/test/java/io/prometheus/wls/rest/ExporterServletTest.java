@@ -7,11 +7,11 @@ package io.prometheus.wls.rest;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import io.prometheus.wls.rest.matchers.PrometheusMetricsMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -69,23 +69,23 @@ public class ExporterServletTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         InMemoryFileSystem.uninstall();
         ConfigurationUpdaterStub.uninstall();
     }
 
     @Test
-    public void exporter_isHttpServlet() throws Exception {
+    public void exporter_isHttpServlet() {
         assertThat(servlet, instanceOf(HttpServlet.class));
     }
 
     @Test
-    public void servlet_hasWebServletAnnotation() throws Exception {
+    public void servlet_hasWebServletAnnotation() {
         assertThat(ExporterServlet.class.getAnnotation(WebServlet.class), notNullValue());
     }
 
     @Test
-    public void servletAnnotationIndicatesMetricsPage() throws Exception {
+    public void servletAnnotationIndicatesMetricsPage() {
         WebServlet annotation = ExporterServlet.class.getAnnotation(WebServlet.class);
 
         assertThat(annotation.value(), arrayContaining("/metrics"));
@@ -224,7 +224,7 @@ public class ExporterServletTest {
                    hasJsonPath("$.children.groups.fields").withValues("name", "testSample1"));
     }
 
-    private void initServlet(String configuration) throws ServletException {
+    private void initServlet(String configuration) {
         InMemoryFileSystem.defineResource(LiveConfiguration.CONFIG_YML, configuration);
         servlet.init(withNoParams());
     }
@@ -291,7 +291,9 @@ public class ExporterServletTest {
 
         servlet.doGet(request, response);
 
-        assertThat(toHtml(response), followsPrometheusRules());
+        final PrometheusMetricsMatcher matcher = followsPrometheusRules();
+        final String actual = toHtml(response);
+        assertThat(actual, matcher);
     }
 
     @Test
@@ -441,7 +443,7 @@ public class ExporterServletTest {
             addedHeaders.put(name, value);
         }
         @Override
-        public String doPostRequest(String postBody) throws IOException {
+        public String doPostRequest(String postBody) {
             if (status == SC_FORBIDDEN) throw new ForbiddenException();
             if (basicRealmName != null) throw new BasicAuthenticationChallengeException(basicRealmName);
 

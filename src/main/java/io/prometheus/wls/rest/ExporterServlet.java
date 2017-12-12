@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import static io.prometheus.wls.rest.domain.MapUtils.isNullOrEmptyString;
@@ -36,13 +37,19 @@ public class ExporterServlet extends PassThroughAuthenticationServlet {
     }
 
     @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
+    public void init(ServletConfig servletConfig) {
         LiveConfiguration.init(servletConfig);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doWithAuthentication(req, resp, this::displayMetrics);
+        AuthenticatedService authenticatedService = new AuthenticatedService() {
+            @Override
+            public void execute(WebClient webClient, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+                displayMetrics(webClient, req, resp);
+            }
+        };
+        doWithAuthentication(req, resp, authenticatedService);
     }
 
     @SuppressWarnings("unused") // The req parameter is not used, but is required by 'doWithAuthentication'
@@ -66,8 +73,13 @@ public class ExporterServlet extends PassThroughAuthenticationServlet {
     private void displayMetrics(WebClient webClient, MetricsStream metricsStream, MBeanSelector selector) throws IOException {
         try {
             Map<String, Object> metrics = getMetrics(webClient, selector);
-            if (metrics != null)
-                sort(metrics).forEach(metricsStream::printMetric);
+            if (metrics != null) {
+                Set<Map.Entry<String, Object>> metricSet = sort(metrics).entrySet();
+                for(Map.Entry<String, Object> metric : metricSet) {
+                    metricsStream.printMetric(metric.getKey(), metric.getValue());
+                }
+            }
+                //sort(metrics).forEach(metricsStream::printMetric);
         } catch (RestQueryException e) {
             metricsStream.println("REST service was unable to handle this query\n" + selector.getPrintableRequest());
         }

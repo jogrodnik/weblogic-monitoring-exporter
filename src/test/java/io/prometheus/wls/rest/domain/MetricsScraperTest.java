@@ -123,11 +123,26 @@ public class MetricsScraperTest {
             "                ]}\n" +
             "            }";
 
-    private final Map<String,Object> leafMap = new HashMap<>(ImmutableMap.of(MBeanSelector.KEY, "servletName",
-            MBeanSelector.PREFIX, "servlet_", MBeanSelector.VALUES, new String[]{"invocationTotalCount","invocationId"}));
+    private final Map<String,Object> leafMap = new HashMap<>();
+    {
+        Map<String, Object> map = new HashMap<>();
+        map.put(MBeanSelector.KEY, "servletName");
+        map.put(MBeanSelector.PREFIX, "servlet_");
+        map.put(MBeanSelector.VALUES, new String[]{"invocationTotalCount","invocationId"});
+//        ImmutableMap.of(MBeanSelector.KEY, "servletName",
+//            MBeanSelector.PREFIX, "servlet_", MBeanSelector.VALUES, new String[]{"invocationTotalCount","invocationId"})
+        leafMap.putAll(map);
+    }
 
-    private final Map<String,Object> emptyLeafMap = new HashMap<>(ImmutableMap.of(MBeanSelector.KEY, "servletName",
-            MBeanSelector.PREFIX, "servlet_"));
+    private final Map<String,Object> emptyLeafMap = new HashMap<>();
+    {
+        Map<String, Object> map = new HashMap<>();
+//        ImmutableMap.of(MBeanSelector.KEY, "servletName",
+//            MBeanSelector.PREFIX, "servlet_")
+        map.put(MBeanSelector.KEY, "servletName");
+        map.put(MBeanSelector.PREFIX, "servlet_");
+        emptyLeafMap.putAll(map);
+    }
 
     private final Map<String,Object> componentMap = new HashMap<>(
             ImmutableMap.of(MBeanSelector.KEY_NAME, "component", MBeanSelector.KEY, "name", MBeanSelector.PREFIX, "component_",
@@ -139,14 +154,22 @@ public class MetricsScraperTest {
                             "servlets", leafMap,
                             MBeanSelector.VALUES, new String[]{"sourceInfo", "internal", "deploymentState"}));
 
-    private final Map<String,Object> twoLevelMap = ImmutableMap.of("componentRuntimes", componentMap);
+//    private final Map<String,Object> twoLevelMap = ImmutableMap.of("componentRuntimes", componentMap);
+    private final Map<String,Object> twoLevelMap = new HashMap<>();//ImmutableMap.of("componentRuntimes", componentMap);
+    {
+        twoLevelMap.put("componentRuntimes", componentMap);
+    }
 
-    private final Map<String,Object> noPrefixTwoLevelMap = ImmutableMap.of("componentRuntimes", noPrefixComponentMap);
+//    private final Map<String,Object> noPrefixTwoLevelMap = ImmutableMap.of("componentRuntimes", noPrefixComponentMap);
+    private final Map<String,Object> noPrefixTwoLevelMap = new HashMap<>();
+    {
+        noPrefixTwoLevelMap.put("componentRuntimes", noPrefixComponentMap);
+    }
 
     private final MetricsScraper scraper = new MetricsScraper();
 
     @Test
-    public void generateLeafMetrics() throws Exception {
+    public void generateLeafMetrics() {
         generateNestedMetrics(getServletsMap(), SERVLET_RESPONSE);
 
         assertThat(scraper.getMetrics(),
@@ -155,8 +178,11 @@ public class MetricsScraperTest {
                          hasMetric("servlet_invocationTotalCount{servletName=\"ready\"}", 2)));
     }
 
-    private ImmutableMap<String, Object> getServletsMap() {
-        return ImmutableMap.of("servlets", leafMap);
+    private Map<String, Object> getServletsMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("servlets", leafMap);
+//        return ImmutableMap.of("servlets", leafMap);
+        return map;
     }
 
     private void generateNestedMetrics(Map<String,Object> map, String jsonString) {
@@ -172,7 +198,7 @@ public class MetricsScraperTest {
     }
 
     @Test
-    public void whenNoValuesSpecified_generateAllMetrics() throws Exception {
+    public void whenNoValuesSpecified_generateAllMetrics() {
         generateNestedMetrics(getAllValuesServletsMap(), SERVLET_RESPONSE);
 
         assertThat(scraper.getMetrics(),
@@ -181,12 +207,15 @@ public class MetricsScraperTest {
                          hasMetric("servlet_invocationTotalCount{servletName=\"ready\"}", 2)));
     }
 
-    private ImmutableMap<String, Object> getAllValuesServletsMap() {
-        return ImmutableMap.of("servlets", emptyLeafMap);
+    private Map<String, Object> getAllValuesServletsMap() {
+        //return ImmutableMap.of("servlets", emptyLeafMap);
+        Map<String, Object> map = new HashMap<>();
+        map.put("servlets", emptyLeafMap);
+        return map;
     }
 
     @Test
-    public void generateLeafMetricsWhileAccumulatingQualifiers() throws Exception {
+    public void generateLeafMetricsWhileAccumulatingQualifiers() {
         generateNestedMetrics(getServletsMap(), SERVLET_RESPONSE, "webapp=\"wls\"");
 
         assertThat(scraper.getMetrics(),
@@ -194,26 +223,29 @@ public class MetricsScraperTest {
     }
 
     @Test
-    public void generateLeafMetricsWithNoQualifiers() throws Exception {
+    public void generateLeafMetricsWithNoQualifiers() {
         generateNestedMetrics(getServletsMapWithoutQualifierKey(), SINGLE_SERVLET_RESPONSE);
 
         assertThat(scraper.getMetrics(), hasMetric("servlet_invocationTotalCount", 0));
     }
 
-    private ImmutableMap<String, Object> getServletsMapWithoutQualifierKey() {
+    private Map<String, Object> getServletsMapWithoutQualifierKey() {
         leafMap.remove(MBeanSelector.KEY);
-        return ImmutableMap.of("servlets", leafMap);
+//        return ImmutableMap.of("servlets", leafMap);
+        Map<String, Object> map = new HashMap<>();
+        map.put("servlets", leafMap);
+        return map;
     }
 
     @Test
-    public void generateLeafMetricsWithParentQualifiersOnly() throws Exception {
+    public void generateLeafMetricsWithParentQualifiersOnly() {
         generateNestedMetrics(getServletsMapWithoutQualifierKey(), SINGLE_SERVLET_RESPONSE, "webapp=\"wls\"");
 
         assertThat(scraper.getMetrics(), hasMetric("servlet_invocationTotalCount{webapp=\"wls\"}", 0));
     }
 
     @Test
-    public void whenKeyNameSpecified_useItRatherThanKey() throws Exception {
+    public void whenKeyNameSpecified_useItRatherThanKey() {
         generateNestedMetrics(getServletsMapWithKeyName("servlet"), SERVLET_RESPONSE);
 
         assertThat(scraper.getMetrics(), hasMetric("servlet_invocationTotalCount{servlet=\"JspServlet\"}", 0));
@@ -222,11 +254,14 @@ public class MetricsScraperTest {
     @SuppressWarnings("SameParameterValue")
     private Map<String, Object> getServletsMapWithKeyName(String keyName) {
         leafMap.put(MBeanSelector.KEY_NAME, keyName);
-        return ImmutableMap.of("servlets", leafMap);
+//        return ImmutableMap.of("servlets", leafMap);
+        Map<String, Object> map = new HashMap<>();
+        map.put("servlets", leafMap);
+        return map;
     }
 
     @Test
-    public void whenValuesIncludesKey_ignoreIt() throws Exception {
+    public void whenValuesIncludesKey_ignoreIt() {
         generateNestedMetrics(getServletsMapWithKey("invocationId"), SINGLE_SERVLET_RESPONSE);
 
         assertThat(scraper.getMetrics(), not(hasMetric("servlet_invocationId{invocationId=\"23\"}", 23)));
@@ -235,25 +270,28 @@ public class MetricsScraperTest {
     @SuppressWarnings("SameParameterValue")
     private Map<String, Object> getServletsMapWithKey(String key) {
         leafMap.put(MBeanSelector.KEY, key);
-        return ImmutableMap.of("servlets", leafMap);
+//        return ImmutableMap.of("servlets", leafMap);
+        Map<String, Object> map = new HashMap<>();
+        map.put("servlets", leafMap);
+        return map;
     }
 
     @Test
-    public void whenGenerateHierarchicalMetrics_containsTopLevel() throws Exception {
+    public void whenGenerateHierarchicalMetrics_containsTopLevel() {
         generateNestedMetrics(twoLevelMap, TWO_LEVEL_RESPONSE);
 
         assertThat(scraper.getMetrics(), hasMetric("component_deploymentState{component=\"ejb30_weblogic\"}", 2));
     }
 
     @Test
-    public void whenNoPrefix_generateBareMetrics() throws Exception {
+    public void whenNoPrefix_generateBareMetrics() {
         generateNestedMetrics(noPrefixTwoLevelMap, TWO_LEVEL_RESPONSE);
 
         assertThat(scraper.getMetrics(), hasMetric("deploymentState{component=\"ejb30_weblogic\"}", 2));
     }
 
     @Test
-    public void whenGenerateHierarchicalMetrics_ignoresNonNumericValues() throws Exception {
+    public void whenGenerateHierarchicalMetrics_ignoresNonNumericValues() {
         generateNestedMetrics(twoLevelMap, TWO_LEVEL_RESPONSE);
 
         assertThat(scraper.getMetrics(), not(hasMetric("component_sourceInfo{component=\"ejb30_weblogic\"}", "weblogic.war")));
@@ -261,19 +299,19 @@ public class MetricsScraperTest {
     }
 
     @Test
-    public void whenGenerateHierarchicalMetrics_containsBottomLevel() throws Exception {
+    public void whenGenerateHierarchicalMetrics_containsBottomLevel() {
         generateNestedMetrics(twoLevelMap, TWO_LEVEL_RESPONSE);
 
         assertThat(scraper.getMetrics(), hasMetric("servlet_invocationTotalCount{component=\"ejb30_weblogic\",servletName=\"JspServlet\"}", 0));
     }
 
     @Test
-    public void whenResponseLacksServerRuntimes_generateEmptyMetrics() throws Exception {
+    public void whenResponseLacksServerRuntimes_generateEmptyMetrics() {
         assertThat(scraper.scrape(MBeanSelector.create(getFullMap()), getJsonResponse("{}")), anEmptyMap());
     }
 
     @Test
-    public void generateFromFullResponse() throws Exception {
+    public void generateFromFullResponse() {
         Map<String, Object> metrics = scraper.scrape(MBeanSelector.create(getFullMap()), getJsonResponse(RESPONSE));
         
         assertThat(metrics, hasMetric("component_deploymentState{application=\"weblogic\",component=\"ejb30_weblogic\"}", 2));
@@ -281,14 +319,21 @@ public class MetricsScraperTest {
     }
 
     private Map<String, Object> getFullMap() {
-        return ImmutableMap.of("applicationRuntimes",
-                    ImmutableMap.of(MBeanSelector.KEY_NAME, "application", MBeanSelector.KEY, "name",
-                                    "componentRuntimes", componentMap));
+//        return ImmutableMap.of("applicationRuntimes",
+//                    ImmutableMap.of(MBeanSelector.KEY_NAME, "application", MBeanSelector.KEY, "name",
+//                                    "componentRuntimes", componentMap));
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> mapLeaf = new HashMap<>();
+        mapLeaf.put(MBeanSelector.KEY_NAME, "application");
+        mapLeaf.put(MBeanSelector.KEY, "name");
+        mapLeaf.put("componentRuntimes", componentMap);
+        map.put("applicationRuntimes", mapLeaf);
+        return map;
     }
 
 
     @Test
-    public void generateFromFullResponseUsingSnakeCase() throws Exception {
+    public void generateFromFullResponseUsingSnakeCase() {
         scraper.setMetricNameSnakeCase(true);
         Map<String, Object> metrics = scraper.scrape(MBeanSelector.create(getFullMap()), getJsonResponse(RESPONSE));
 
@@ -297,7 +342,7 @@ public class MetricsScraperTest {
     }
 
     @Test
-    public void whenTypeNotSpecified_includeAllComponents() throws Exception {
+    public void whenTypeNotSpecified_includeAllComponents() {
         Map<String, Object> metrics = scraper.scrape(MBeanSelector.create(getFullMap()), getJsonResponse(RESPONSE));
 
         assertThat(metrics, hasMetric("component_deploymentState{application=\"weblogic\",component=\"ejb30_weblogic\"}", 2));
@@ -305,7 +350,7 @@ public class MetricsScraperTest {
     }
 
     @Test
-    public void selectOnlyWebApps() throws Exception {
+    public void selectOnlyWebApps() {
         componentMap.put(MBeanSelector.TYPE, "WebAppComponentRuntime");
         Map<String, Object> metrics = scraper.scrape(MBeanSelector.create(getFullMap()), getJsonResponse(RESPONSE));
 
@@ -314,7 +359,7 @@ public class MetricsScraperTest {
     }
 
     @Test
-    public void whenValuesAtTopLevel_scrapeThem() throws Exception {
+    public void whenValuesAtTopLevel_scrapeThem() {
         final MBeanSelector selector = MBeanSelector.create(getMetricsMap());
         final JsonObject jsonResponse = getJsonResponse(METRICS_RESPONSE);
         Map<String, Object> metrics = scraper.scrape(selector, jsonResponse);
@@ -324,8 +369,14 @@ public class MetricsScraperTest {
 
 
     private Map<String, Object> getMetricsMap() {
-        return ImmutableMap.of("JVMRuntime",
-                    ImmutableMap.of(MBeanSelector.KEY, "name", MBeanSelector.VALUES, new String[]{"processCpuLoad", "heapSizeCurrent"}));
+//        return ImmutableMap.of("JVMRuntime",
+//                    ImmutableMap.of(MBeanSelector.KEY, "name", MBeanSelector.VALUES, new String[]{"processCpuLoad", "heapSizeCurrent"}));
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> mapLeaf = new HashMap<>();
+        mapLeaf.put(MBeanSelector.KEY, "name");
+        mapLeaf.put(MBeanSelector.VALUES, new String[]{"processCpuLoad", "heapSizeCurrent"});
+        map.put("JVMRuntime", mapLeaf);
+        return map;
     }
 
 

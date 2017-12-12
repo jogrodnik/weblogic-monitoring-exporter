@@ -4,12 +4,13 @@ package io.prometheus.wls.rest.matchers;
  *
  * Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
  */
+
 import io.prometheus.wls.rest.domain.SnakeCaseUtil;
 import org.hamcrest.Description;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 /**
  * @author Russell Gold
@@ -31,12 +32,24 @@ public class MetricsNamesSnakeCaseMatcher extends org.hamcrest.TypeSafeDiagnosin
     }
 
     private List<String> getNonSnakeCaseNames(String[] metrics) {
-        return Arrays.stream(metrics)
-                .filter((s) -> !s.startsWith("#"))
-                .map(MetricsUtils::getMetricName)
-                .filter((s) -> !SnakeCaseUtil.isCompliant(s))
-                .filter(new MetricsUtils.Uniq())
-                .collect(Collectors.toList());
+//        return Arrays.stream(metrics)
+//                .filter((s) -> !s.startsWith("#"))
+//                .map(MetricsUtils::getMetricName)
+//                .filter((s) -> !SnakeCaseUtil.isCompliant(s))
+//                .filter(new MetricsUtils.Uniq())
+//                .collect(Collectors.toList());
+        List<String> groups = new ArrayList<>();
+        for (String s : metrics) {
+            if (!s.startsWith("#")) {
+                String metricName = MetricsUtils.getMetricName(s);
+                if (!SnakeCaseUtil.isCompliant(s)) {
+                    if (new MetricsUtils.Uniq().test(metricName)) {
+                        groups.add(metricName);
+                    }
+                }
+            }
+        }
+        return groups;
     }
 
     @Override

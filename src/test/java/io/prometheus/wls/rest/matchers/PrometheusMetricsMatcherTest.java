@@ -6,10 +6,7 @@ package io.prometheus.wls.rest.matchers;
  */
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static io.prometheus.wls.rest.matchers.PrometheusMetricsMatcher.followsPrometheusRules;
-import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -18,10 +15,12 @@ import static org.junit.Assert.assertTrue;
  */
 public class PrometheusMetricsMatcherTest {
 
+    private static final String delimeter = "\n";
+
     private final PrometheusMetricsMatcher matcher = followsPrometheusRules();
 
     @Test
-    public void whenMetricsAreGrouped_matcherPasses() throws Exception {
+    public void whenMetricsAreGrouped_matcherPasses() {
         assertTrue(matcher.matches(toHtml(ORDERED_LIST)));
     }
 
@@ -29,11 +28,21 @@ public class PrometheusMetricsMatcherTest {
             {"metric1 1", "metric2{name='red'} 23", "metric2{name='blue'} 34"};
 
     private String toHtml(String... metrics) {
-        return Arrays.stream(metrics).map((s) -> s.replace('\'', '"')).collect(joining("\n"));
+        final StringBuilder result = new StringBuilder();
+        for (int i = 0; i < metrics.length; i++) {
+            String s = metrics[i];
+            String s1 = s.replace('\'', '"');
+            if (i != metrics.length -1) {
+                s1 = s1 + delimeter;
+            }
+            result.append(s1);
+        }
+        //return Arrays.stream(metrics).map((s) -> s.replace('\'', '"')).collect(joining("\n"));
+        return result.toString();
     }
 
     @Test
-    public void whenMetricsAreInterspersed_matcherFails() throws Exception {
+    public void whenMetricsAreInterspersed_matcherFails() {
         assertFalse(matcher.matches(toHtml(MISORDERED_LIST)));
     }
 
@@ -41,8 +50,10 @@ public class PrometheusMetricsMatcherTest {
             {"metric2{name='red'} 23", "metric1 1", "metric2{name='blue'} 34"};
 
     @Test
-    public void whenMetricsHaveNonNumericValues_matcherFails() throws Exception {
-        assertFalse(matcher.matches(toHtml(TEXT_LIST)));
+    public void whenMetricsHaveNonNumericValues_matcherFails() {
+        final String toHtml = toHtml(TEXT_LIST);
+        final boolean matches = matcher.matches(toHtml);
+        assertFalse(matches);
     }
 
     private final String[] TEXT_LIST =

@@ -4,10 +4,11 @@ package io.prometheus.wls.rest.domain;
  *
  * Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
  */
-import com.google.common.collect.ImmutableMap;
+
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.arrayContaining;
@@ -22,21 +23,27 @@ public class MapUtilsTest {
 
     @Test
     public void whenStringArrayValueIsStringArray_returnAsIs() throws Exception {
-        Map<String,Object> map = ImmutableMap.of("values", STRING_ARRAY);
+//        Map<String,Object> map = ImmutableMap.of("values", STRING_ARRAY);
+        Map<String,Object> map = new HashMap<>();
+        map.put("values", STRING_ARRAY);
 
         assertThat(MapUtils.getStringArray(map, "values"), arrayContaining(STRING_ARRAY));
     }
 
     @Test
     public void whenStringArrayValueIsSingleObject_returnAsLengthOneArray() throws Exception {
-        Map<String,Object> map = ImmutableMap.of("values", 33);
+//        Map<String,Object> map = ImmutableMap.of("values", 33);
+        Map<String,Object> map = new HashMap<>();
+        map.put("values", 33);
 
         assertThat(MapUtils.getStringArray(map, "values"), arrayContaining("33"));
     }
 
     @Test
     public void whenStringArrayValueIsList_returnAsArray() throws Exception {
-        Map<String,Object> map = ImmutableMap.of("values", Arrays.asList(7, 8, true));
+//        Map<String,Object> map = ImmutableMap.of("values", Arrays.asList(7, 8, true));
+        Map<String,Object> map = new HashMap<>();
+        map.put("values", Arrays.asList(7, 8, true));
 
         assertThat(MapUtils.getStringArray(map, "values"), arrayContaining("7", "8", "true"));
     }

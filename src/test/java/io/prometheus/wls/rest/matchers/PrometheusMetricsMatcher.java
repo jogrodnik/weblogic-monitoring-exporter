@@ -7,9 +7,11 @@ package io.prometheus.wls.rest.matchers;
 import com.google.common.base.Strings;
 import org.hamcrest.Description;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 // verifies that metrics are grouped by name, ignores any comments
 /**
@@ -93,12 +95,25 @@ public class PrometheusMetricsMatcher extends org.hamcrest.TypeSafeDiagnosingMat
     }
 
     private List<String> getSortedGroups(String[] metricsList) {
-        return Arrays.stream(metricsList)
-                .filter((s) -> !s.startsWith("#"))
-                .map(MetricsUtils::getMetricName)
-                .filter(new MetricsUtils.Uniq())
-                .sorted()
-                .collect(Collectors.toList());
+//        return Arrays.stream(metricsList)
+//                .filter((s) -> !s.startsWith("#"))
+//                .map(MetricsUtils::getMetricName)
+//                .filter(new MetricsUtils.Uniq())
+//                .sorted()
+//                .collect(Collectors.toList());
+        final MetricsUtils.Uniq uniq = new MetricsUtils.Uniq();
+
+        List<String> groups = new ArrayList<>();
+        for (String s : metricsList) {
+            if (!s.startsWith("#")) {
+                String metricName = MetricsUtils.getMetricName(s);
+                if (uniq.test(metricName)) {
+                    groups.add(metricName);
+                }
+            }
+        }
+        Collections.sort(groups);
+        return groups;
     }
 
     @Override

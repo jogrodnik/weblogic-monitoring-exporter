@@ -29,8 +29,11 @@ public class ConfigurationException extends RuntimeException {
     @Override
     public String getMessage() {
         StringBuilder sb = new StringBuilder(super.getMessage());
-        if (!context.isEmpty())
-            sb.append(" at ").append(String.join(".", context));
+        if (!context.isEmpty()) {
+//            final String join = String.join(".", context);
+            final String join = StringJoiner.join(".", context.toArray(new String[context.size()]));
+            sb.append(" at ").append(join);
+        }
         return sb.toString();
     }
 }

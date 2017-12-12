@@ -10,6 +10,8 @@ import io.prometheus.wls.rest.domain.ExporterConfig;
 import io.prometheus.wls.rest.domain.MBeanSelector;
 
 import java.io.ByteArrayInputStream;
+import java.util.Map;
+import java.util.Set;
 
 import static io.prometheus.wls.rest.DemoInputs.*;
 
@@ -32,8 +34,16 @@ public class YamlDemo {
         String response = compressedJsonForm(RESPONSE);
         System.out.println("The response\n" + response + "\nwill be transformed into the following metrics:");
 
-        exporterConfig.scrapeMetrics(selector, getJsonResponse(response)).
-                forEach((name, value) -> System.out.printf("  %s %s%n", name, value));
+//        exporterConfig.scrapeMetrics(selector, getJsonResponse(response)).
+//                forEach((name, value) -> System.out.printf("  %s %s%n", name, value));
+        final Map<String, Object> metrics = exporterConfig.scrapeMetrics(selector, getJsonResponse(response));
+        final Set<Map.Entry<String, Object>> metricSet = metrics.entrySet();
+
+        for (final Map.Entry<String, Object> metric : metricSet) {
+            final String name = metric.getKey();
+            final Object value = metric.getValue();
+            System.out.printf("  %s %s%n", name, value);
+        }
     }
 
     private static JsonObject getJsonResponse(String jsonString) {

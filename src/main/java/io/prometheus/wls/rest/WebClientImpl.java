@@ -177,7 +177,7 @@ public class WebClientImpl extends WebClient {
     }
 
     private Collection<? extends Header> getDefaultHeaders() {
-        List<Header> headers = new ArrayList<>(addedHeaders);
+        List<BasicHeader> headers = new ArrayList<>(addedHeaders);
         headers.addAll(sessionHeaders);
         return headers;
     }

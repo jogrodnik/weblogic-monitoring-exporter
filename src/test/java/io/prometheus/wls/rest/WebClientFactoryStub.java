@@ -57,7 +57,7 @@ abstract class WebClientFactoryStub implements WebClientFactory {
         }
 
         @Override
-        String doPutRequest(String putBody) throws IOException {
+        String doPutRequest(String putBody) {
             postedValue = putBody;
             return null;
         }

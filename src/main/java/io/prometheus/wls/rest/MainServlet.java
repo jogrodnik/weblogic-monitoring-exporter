@@ -25,12 +25,12 @@ import static io.prometheus.wls.rest.ServletConstants.*;
 public class MainServlet extends HttpServlet {
 
     @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
+    public void init(ServletConfig servletConfig) {
         LiveConfiguration.init(servletConfig);
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         LiveConfiguration.setServer(req.getServerName(), req.getServerPort());
         LiveConfiguration.updateConfiguration();
         resp.getOutputStream().println(ServletConstants.PAGE_HEADER);
@@ -74,7 +74,7 @@ public class MainServlet extends HttpServlet {
         return getEffectivePath(req, CONFIGURATION_PAGE);
     }
 
-    private void displayConfiguration(ServletOutputStream outputStream) throws IOException {
+    private void displayConfiguration(ServletOutputStream outputStream) {
         try (PrintStream ps = new PrintStream(outputStream)) {
             ps.println("<p>Current Configuration</p>");
             ps.println("<p><code><pre>");
